@@ -1,0 +1,438 @@
+(-)오라클 CLEATE도 못하니깐 재미없다.
+create table TBLMEMBER (
+ID VARCHAR2(20) PRIMARY KEY,
+PWD VARCHAR2(20) NOT NULL,
+NAME VARCHAR2(20) NOT NULL,
+GENDER VARCHAR2(1) NOT NULL,
+BIRTHDAY VARCHAR2(6) NOT NULL,
+EMAIL VARCHAR2(30) NOT NULL,
+ZIPCODE VARCHAR2(5) NOT NULL,
+ADDRESS VARCHAR2(50) NOT NULL,
+HOBBY VARCHAR2(5) NOT NULL,
+JOB VARCHAR2(20) NOT NULL );
+
+DESC TBLMEMBER;
+
+CREATE TABLE TBLZIPCODE (
+ZIPCODE VARCHAR2(5) NOT NULL,
+AREA1 VARCHAR2(10),
+AREA2 VARCHAR2(20),
+AREA3 VARCHAR2(30));
+
+DESC TBLZIPCODE;
+
+이름       널?       유형           
+-------- -------- ------------ 
+ID       NOT NULL VARCHAR2(20) 
+PWD      NOT NULL VARCHAR2(20) 
+NAME     NOT NULL VARCHAR2(20) 
+GENDER   NOT NULL VARCHAR2(1)  
+BIRTHDAY NOT NULL VARCHAR2(6)  
+EMAIL    NOT NULL VARCHAR2(30) 
+ZIPCODE  NOT NULL VARCHAR2(5)  
+ADDRESS  NOT NULL VARCHAR2(50) 
+HOBBY    NOT NULL VARCHAR2(5)  
+JOB      NOT NULL VARCHAR2(20) 
+
+
+
+
+
+이름      널?       유형           
+------- -------- ------------ 
+ZIPCODE NOT NULL VARCHAR2(5)  
+AREA1            VARCHAR2(10) 
+AREA2            VARCHAR2(20) 
+AREA3            VARCHAR2(30) 
+
+
+
+
+http://jspstudy.co.kr/myapp/ch14/login.jsp
+소스보기
+copy 
+http://jspstudy.co.kr/myapp/ch14/member.jsp
+소스보기
+copy 
+http://jspstudy.co.kr/myapp/ch14/style.css
+소스보기
+copy 
+BODY {
+	FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma
+}
+TD {
+	FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma
+}
+SELECT {
+	FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma
+}
+DIV {
+	FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma
+}
+FORM {
+	FONT-SIZE: 9pt; COLOR: black; LINE-HEIGHT: 160%; FONT-FAMILY: 굴림,verdana,tahoma
+}
+TEXTAREA {
+	BORDER-RIGHT: 1px solid #999999; BORDER-TOP: 1px solid #999999; FONT-SIZE: 9pt; BORDER-LEFT: 1px solid #999999 ; COLOR: BLACK; BORDER-BOTTOM: 1px solid #999999; FONT-FAMILY: 굴림,verdana; BACKGROUND-COLOR: white
+}
+INPUT {
+	BORDER-RIGHT: 1px solid #999999; BORDER-TOP: 1px solid #999999; FONT-SIZE: 9pt; BORDER-LEFT: 1px solid #999999; COLOR: BLACK; BORDER-BOTTOM: 1px solid #999999; FONT-FAMILY: 굴림,verdana; HEIGHT: 19px; BACKGROUND-COLOR: white
+}
+
+A:link {text-decoration:none;color:#696969}
+A:hover{text-decoration:yes;color:#66CCFF}
+A:visited {text-decoration:none;color:#330066}
+
+
+//선임의 화면 패턴에 맞춰서 일을 하시는게 일을 잘하는거고 코딩도 잘 하는 거에요
+eg> 이 타입으로 하는구나 라고.
+<input type="button" value="로그인" onclick="loginCheck()">&nbsp;
+<input type="button" value="회원가입" onClick="javascript:location.href='member.jsp'">
+
+
+
+http://jspstudy.co.kr/myapp/ch14/script.js
+script.js 
+->
+
+
+//zipcodedp은 readonly써서 편집이 안되게 했음.
+
+
+
+
+member.jsp
+//url은 ~ 이고 , scrollbars=yes 는 약속이라 외우고.
+		url = "zipSearch.jsp?search=n";
+		window.open(url, "ZipCodeSearch","width=500,height=300,scrollbars=yes");
+calspan 말고 생각하다가 collapse; 생각나셔서
+collapse: 2줄이 1줄로 바뀌고 px사이즈 주면 크기 바귐. 선색깔도 줬다.
+
+
+
+
+
+
+
+
+DBConnectionMgr.java에서
+package jsboard;
+import java.sql.*;
+import java.util.*;
+
+public class MemberMgr {
+	private DBConnectionMgr pool;
+	
+	public MemberMgr() {
+		try {
+			pool = DBConnectionMgr.getInstance();
+		} catch (Exception e) {
+			e.prinStackTrace();
+		}
+	}
+	
+}
+
+
+
+
+
+
+
+
+package jsboard;
+
+import java.sql.*;
+import java.util.*;
+
+public class DBConnectionMgr {
+	private static DBConnectionMgr instance=null;
+	
+	public DBConnectionMgr() {
+	}
+	public static DBConnectionMgr getInstance() {
+		if(instance == null) {
+			synchronized (DBConnectionMgr.class) {
+				if(instance == null ) {
+					instance=new DBConnectionMgr();
+				}
+			}
+		}
+	return instance;
+	}
+	
+	
+}
+
+
+
+
+
+
+
+
+
+(+)MemberMgr.java에서
+
+			sql="inset tblmember (id,pwd"
+			
+---			
+public boolean insertMember(MemberBean bean) {
+		boolean flag=false;
+		
+		
+//2개 비교하기
+inserlt 는 한행이 채워졌습니다.
+Resultset는 ???
+
+//설명 놓침
+
+
+//client 쓰고,읽고,삭제하고 수백명이 하는데 pool이 여러개 일 수있다. 가능한 갯수 까지. ?의 인스턴스가지고
+getconn한다고.
+
+(-)위의 이유로 수정중
+	public boolean insertMember(MemberBean bean) {
+		boolean flag=false;
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		String sql=null;
+		try {
+			conn=pool.getConnection();
+			
+			
+			
+			
+			
+			
+			flag=true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt);
+		}
+		return flag;
+	}
+	
+	
+}
+
+
+
+(-)DBConnectionMgr.java에서
+
+import java.util.Properties;
+import java.util.Vector;
+-----
+
+    /** Returns an unused existing or new connection.  */
+    public synchronized Connection getConnection()
+            throws Exception {
+        if (!initialized) {
+            Class c = Class.forName(_driver);
+            DriverManager.registerDriver((Driver) c.newInstance());
+
+            initialized = true;
+        }
+        Connection c = null;
+        ConnectionObject co = null;
+        boolean badConnection = false;
+        for (int i = 0; i < connections.size(); i++) {
+            co = (ConnectionObject) connections.elementAt(i);
+
+            // If connection is not in use, test to ensure it's still valid!
+            if (!co.inUse) {
+                try {
+                    badConnection = co.connection.isClosed();
+                    if (!badConnection)
+                        badConnection = (co.connection.getWarnings() != null);
+                } catch (Exception e) {
+                    badConnection = true;
+                    e.printStackTrace();
+                }
+
+                // Connection is bad, remove from pool
+                if (badConnection) {
+                    connections.removeElementAt(i);
+                    trace("ConnectionPoolManager: Remove disconnected DB connection #" + i);
+                    continue;
+                }
+
+                c = co.connection;
+                co.inUse = true;
+
+                trace("ConnectionPoolManager: Using existing DB connection #" + (i + 1));
+                break;
+            }
+        }
+
+        if (c == null) {
+            c = createConnection();
+            co = new ConnectionObject(c, true);
+            connections.addElement(co);
+
+            trace("ConnectionPoolManager: Creating new DB connection #" + connections.size());
+        }
+
+        return c;
+    }
+
+}
+
+....
+ /** Marks a flag in the ConnectionObject to indicate this connection is no longer in use */
+    public synchronized void freeConnection(Connection c) {
+        if (c == null)
+            return;
+
+        ConnectionObject co = null;
+
+        for (int i = 0; i < connections.size(); i++) {
+            co = (ConnectionObject) connections.elementAt(i);
+            if (c == co.connection) {
+                co.inUse = false;
+                break;
+            }
+        }
+
+        for (int i = 0; i < connections.size(); i++) {
+            co = (ConnectionObject) connections.elementAt(i);
+            if ((i + 1) > _openConnections && !co.inUse)
+                removeConnection(co.connection);
+        }
+    }
+
+    public void freeConnection(Connection c, PreparedStatement p, ResultSet r) {
+        try {
+            if (r != null) r.close();
+            if (p != null) p.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void freeConnection(Connection c, Statement s, ResultSet r) {
+        try {
+            if (r != null) r.close();
+            if (s != null) s.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void freeConnection(Connection c, PreparedStatement p) {
+        try {
+            if (p != null) p.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void freeConnection(Connection c, Statement s) {
+        try {
+            if (s != null) s.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+....
+
+ /** Marks a flag in the ConnectionObject to indicate this connection is no longer in use */
+    public synchronized void freeConnection(Connection c) {
+        if (c == null)
+            return;
+
+        ConnectionObject co = null;
+
+        for (int i = 0; i < connections.size(); i++) {
+            co = (ConnectionObject) connections.elementAt(i);
+            if (c == co.connection) {
+                co.inUse = false;
+                break;
+            }
+        }
+
+        for (int i = 0; i < connections.size(); i++) {
+            co = (ConnectionObject) connections.elementAt(i);
+            if ((i + 1) > _openConnections && !co.inUse)
+                removeConnection(co.connection);
+        }
+    }
+
+    public void freeConnection(Connection c, PreparedStatement p, ResultSet r) {
+        try {
+            if (r != null) r.close();
+            if (p != null) p.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void freeConnection(Connection c, Statement s, ResultSet r) {
+        try {
+            if (r != null) r.close();
+            if (s != null) s.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void freeConnection(Connection c, PreparedStatement p) {
+        try {
+            if (p != null) p.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void freeConnection(Connection c, Statement s) {
+        try {
+            if (s != null) s.close();
+            freeConnection(c);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+----
+
+
+(-)DB연결하러 가겠습니다.
+initialized 를 많이 볼텐데요.
+다시는 이런코드로 안 들어오게하는 거엠
+ConnectionObject
+    }
+	//후자 위치 이동시킴 머리근처에;
+	    private boolean _traceOn = false;
+	
+	쓰레드와 연결제한 줄수있는 코드 넣음
+	
+	
+	
+	
+	
+	
+	
+	
+	//오늘까지 한거는 zipcode넣어야 전체 확인가능.
+	
+	DBConnectionMgr.java 에서
+	//DB에는 ?가 저장되게 했습니다.
+	//conntion 툴.. 지난번엔 ? 했고, 오늘은 50명 한정에 기존에 사용안하는 사람들 빼고 이용하게끔.
+	//method 이름과 구조를 아는게 "중요. "사유 목아프셔도 일일이 말씀해주심.
+	(-)다음 이하는 내용에서 뽑아서 인터넷에 찾기 (한자도 못 들음 소스를 프린트 적고, 
+	위치를 찾아서 어디쓰였는지 확인하고 쓰이는 형태를 이해하기(외우기),
+	남들이 짠 소스 많이 볼꺼임. 어케하면 빨리 파악할지 연습하기)
+	getConnectionLIst ()
+	get
+	get
+	freeConnection
+	re
+
+	

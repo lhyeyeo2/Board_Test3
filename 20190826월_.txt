@@ -1,0 +1,724 @@
+﻿20190826
+. 파일에서
+conn.prepareStatement("select * from table").executeQuery();   관련
+0)https://blog.outsider.ne.kr/266
+1)
+static final String USER = "root";
+            static final String PASS = "newpass";
+
+            Connection conn = DriverManager.getConnection(myUrl, USER, PASS);
+
+            // create a sql date object so we can use it in our INSERT statement
+            Calendar calendar = Calendar.getInstance();
+            java.sql.Date startDate = new java.sql.Date(calendar.getTime().getTime());
+
+            // the mysql insert statement
+            String query = " insert into students (ID, last_name, first_name, birthday, hometown)"
+                    + " values (?, ?, ?, ?, ?)";
+
+            // create the mysql insert preparedstatement
+            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            preparedStmt.setInt(1, 808027);
+            preparedStmt.setString(2, "Davis");
+            preparedStmt.setString(3, "Felicita");
+            preparedStmt.setDate(4, startDate);
+            preparedStmt.setString(5, "Venice");
+
+            // execute the preparedstatement
+            preparedStmt.execute();
+
+            conn.close();
+			
+2)		
+Connection conn = null;
+ResultSet rs = null;
+PreparedStatement ps = null;
+try {
+ conn = getConn();
+ ps = conn.prepareStatement("select * from x where y = ? "); //note no sb.append()'s or +'s, to helps prevent sql injection
+ ps.setLong(1, 12l);
+ rs = ps.executeQuery();
+
+ while (rs.next()) {
+ ... act ...
+ }
+} catch ( Exception e) {
+} finally {
+ if (rs != null) rs.close(); 
+ if (ps != null) ps.close();
+ if (conn != null) conn.close();
+}	
+			
+			
+			
+			
+			
+			
+			
+			
+levle 씀이유 댓글1 대댓글2... 쓰려고
+첫부터 못 만들고 간거(공부해야할꺼)
+updateForm.jsp, updatePro.jsp, deleteForm.jsp
+없는 funtion 은 만들기로 script.js 관련
+
+
+
+
+
+
+(+)지금 deleteForm.jsp
+<%
+int num=Integer.parseInt(request.getParameter("num"));
+String pageNum= request.getParameter("pageNum");
+%>
+
+...
+
+
+<p>글삭제</p>
+<form method="post" action="deletePro.jsp?pageNum=<%=pageNum%>" name="delFom" onsubmit="return deleteSave()">
+<table>
+<tr height="30">
+<td align="center" bgcolor="<%=value_c%>"><b>비밀번호를 입력해 주세요.</b></td>
+<tr height="30">
+  <td align="center" bgcolor="<%=value_c%>">비밀번호 : 
+  <input type="password" size="8" maxlength="12" name="passwd">
+  <input type="hidden" name ="num" value="<%=num%>">
+  </td>
+</tr>
+<tr>
+  <td align="center" bgcolor="<%=value_c%>">
+    <input type="submit" value="글수정">
+    <input type="button" value="목록보기" onClick="window.location.href='list.jsp?pageNum=<%=pageNum%>'">
+  </td>
+</tr>
+
+
+
+
+
+(+)deletePro.jsp에서
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="java.sql.Timestamp" %>
+<%@ page import="board.BoardDBBean" %>
+<% request.setCharacterEncoding("UTF-8"); %>
+
+<%
+int num=Integer.parseInt(request.getParameter("num"));
+String pageNum=request.getParameter("pageNum");
+String passwd=request.getParameter("passwd");
+
+BoardDBBean dbPro = BoardDBBean.getInstance();
+int check = dbPro.deleteArticle(num, passwd);
+
+if(check == 1){
+  
+} else if (check==2) {
+  
+} else {
+  %>
+  <script type="text/javascript" >
+   alert("비밀번호가 맞지 않습니다.");
+  </script>
+<%
+}
+//왱 후자 인건지? A:String url로 넣을수 있어서.
+String url="list.jsp?pageNum"+pageNum;
+response.sendRedirect(url);
+%>
+
+
+
+
+
+
+
+(+)script.js 마지막 줄에 삽입함
+function deleteSave(){
+  if(!document.delForm.passwd.value) {
+    alert("비밀번호를 입력하시오");
+    document.delForm.passwd.focus();
+    return false;
+    }
+  }
+
+
+
+
+
+(-)다음>
+BoardDBBean.java에서
+updateArticle, deleteArticle
+(-)Q: A:  update, delete ... 는 excute updat를 사용해서 시킵니다.
+
+
+
+
+
+
+(+)writepro.jsp 에서
+ip관련
+0.0.0.0.0.0.1 인가 ip6 표현법
+0.0.0.0 ip4 표현법
+request가 애플리케이션 서버에서 지원해줌. 
+
+링크
+(-)(ip 문단에 있음)
+-Djava.net.preferIPv4Stack-true
+
+
+
+
+
+(-)?물어보셧는데 나는 모르고 질문도 모르고..그 내용 알아야하는데..
+
+12:00 (-)update.jsp수정  BoardDBBean 수정
+
+
+
+
+
+
+
+
+writeForm.jsp  (+)삽입중
+ <th bgcolor="<%=value_c%>">email</th>
+  <td align="left"><input type="text" size="40" maxlength="30" name="email"
+  style="ime-mode:inactive;"></td>
+</tr>
+---
+  <th bgcolor="<%=value_c%>">내용</th>
+  <td align="left"><textarea rows="13" cols="40" style="resize:none" name="content"></textarea></td>
+</tr>
+---
+<tr>
+  <th bgcolor="<%=value_c%>">비밀번호</th>
+  <td align="left"><input type="password" size="8" maxlength="12" name="passwd"></td>
+</tr>
+---
+<p> <%=request.getRemoteAddr() %></p>
+
+
+
+
+BoardDBBean.java (+)수정
+try {
+			conn=getConnection();
+			pstmt = conn.prepareStatement("select passwd from eboard where num=?");
+			pstmt.setInt(1, article.getNum());
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				dbpasswd = rs.getString("passwd");
+				if(dbpasswd.contentEquals(article.getPasswd())) {
+					// update
+					sql="update eboard set writer=?, email=?, subject=?, content=?,REG_DATE=?,ip=? "
+							+ " where num=?";
+					pstmt=conn.prepareStatement(sql);
+					pstmt.setString(1,article.getWriter());
+					pstmt.setString(2,article.getEmail());
+//?의 pstmt 순서 바꾸고 A:sql문 순서대로 그리고 " where num=?" 에 해당되는 문구 집어 넣는다고.					
+					pstmt.setString(3,article.getSubject());
+					pstmt.setString(4,article.getContent());
+					pstmt.setTimestamp(5,article.getRegDate());
+					pstmt.setString(6,article.getIp());
+					pstmt.setInt(7,article.getNum());
+					pstmt.executeUpdate();
+					result = 1;
+				}
+				else {
+					result = 0;
+				}
+			}
+
+
+
+----
+	public int deleteArticle(int num, String passwd) throws Exception {
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		ResultSet rs=null;
+        String sql="";
+		String dbpasswd=""; 
+        int result=-1;
+		//후자꺼
+        if (passwd.length() > 12) {
+        	return 2;
+        }
+
+
+
+(+)글삭제후 목록으로가는지 y:deletePro가서 수정하기.
+사유:	
+
+// 글목록으로 이동
+//	String url="list.jsp?pageNum"+pageNum;
+//	response.sendRedirect(url);
+	%>
+	<meta http-equiv="Refresh" content="0;url=list.jsp?pageNum=<%=pageNum%>" >
+	<%	
+} else if(check == 2) {
+	  // 경고창 후 비밀번호 입력화면
+	  %>
+	  <script type="text/javascript" >
+	   alert("비밀번호가 입력값을 초과하였습니다.");
+	   history.go(-1);
+	  </script>
+
+
+(13:00작성중)댓글 쓰는 폼이 안 떠서 뭘 수정할지 모름
+A:content.jsp의
+<input type="button" value="답글쓰기" onclick="document.location.href='writeForm.jsp?num=<%= article.getNum()%>&ref=<%= article.getRef()%>&reStep=<%= article.getReStep()%>&reLevel=<%= article.getReLevel()%>">
+//즉
+
+
+
+
+
+(-)q: A:이전글 이후글 알려면 넘버를 알아야 함.
+A2: 댓글 이전글은 넘버가져오고 대글에서 다음 누르면 본문 넘버 가져오라고?
+
+
+(-)q: A:빈도가 어떻냐에 불러오는 속도가 느리면 사람들이 뭐라하잖아.
+view를 만들어 놓고 view를 컨택해서 꺼내오기.
+
+(-)업데이트 넘버에서 넙버를 가지고 ?로 이동하도록 작성 안 되서 작동x
+A:updatePro.jsp수정
+
+
+(-)q:글자가 둥뚱(글자가 다른, 내용이랑 달라요) content.jsp 수정하러가기
+  A:
+  content.jsp 에서
+  ?->rel=로 고치기
+  ---
+    <td colspan="4" bgcolor="<%=value_c%>">
+    <input type="button" value="글수정" 
+    onclick="document.location.href='updateForm.jsp?num=<%= article.getNum() %>'">
+    <input type="button" value="글삭제" 
+    onclick="document.location.href='deleteForm.jsp?num=<%= article.getNum() %>'">
+    <input type="button" value="답글쓰기"
+     onclick="document.location.href='writeForm.jsp?num=<%= article.getNum()%>&ref=<%= article.getRef()%>&reStep=<%= article.getReStep()%>&reLevel=<%= article.getReLevel()%>'">
+    <input type="button" value="글목록" 
+    onclick="document.location.href='list.jsp?pageNum=<%= pageNum %>'">
+  </td>
+  
+  
+  
+  
+  
+  (-)내 책에옮기기 606 마크 678 마크
+  (-)15:10 jsp  p.678~하라는데 몇십분 놓침
+  
+  (-)C:\z_LimHY\JAVA\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\...
+  우리가 서버를 쓰고 있을때 아파치 톰캣 바로 사용할때 
+  c:\tomcat... \webapps\....
+  
+  
+  
+  
+  
+  
+  (.)추가됨
+  alter table eboard ADD (
+filename varchar(30),
+filesize number(11));
+
+BoardDataBean.java, BoardDBBean.java, writeform.jsp, writePro.jsp 파일수정됨
+
+
+
+
+
+
+
+BoardDataBean.java
+public class BoardDataBean {
+	private int num;
+	private String writer;
+	private String email;
+	private String subject;
+	private String passwd;
+	private Timestamp  regDate;
+	private int readCount;
+	private int ref;
+	private int reStep;
+	private int reLevel;
+	private String content;
+	private String filename;
+	private long filesize;
+
+___
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+	public long getFilesize() {
+		return filesize;
+	}
+	public void setFilesize(long filesize) {
+		this.filesize = filesize;
+	}
+
+
+
+
+
+
+
+
+BoardDBBean.java,
+				pstmt.setString(11,article.getFilename());
+				pstmt.setLong(12,article.getFilesize());
+
+
+
+
+
+
+
+
+
+파일크기는 자료형 long씀 (오라클에는  number (11)
+11번 12번에 넣기.(
+대패삼겹살,대패삼겹살, 대패삼겹살,대패삼겹살,대패삼겹살,대패삼겹살,대패삼겹살,대패삼겹살,대패삼겹살,
+  12345
+  
+ (+)writeform.jsp
+  <form action="writePro.jsp" method="post" name="writeform" enctype="multipart/form-data" onsubmit="return writeSave()">
+// 있다가 지움
+style="ime-mode:active;
+//후자 추가
+<tr>
+  <th bgcolor="<%=value_c%>">파일추가</th>
+  <td align="left"><input type="file" name="filename">
+  <input type="button" value="추가" onclick="location.href='uploadFile.jsp'"></td>
+</tr>
+
+//후자 삭제
+<input type="button" value="추가" onclick="location.href='uploadFileCos.jsp'">
+
+
+
+(-)writePro.jsp
+<%@ page import="com.oreilly.servlet.MultipartRequest" %>
+<%@ page import="com.oreilly.servlet.multipart.FileRenamePolicy" %>
+<%@ page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy" %>
+---
+<%-- <jsp:useBean id="article" class="board.BoardDataBean">
+  <jsp:setProperty name="article" property="*" />
+</jsp:useBean>
+--%>
+<%
+//request.setCharacterEncoding("UTF-8");
+BoardDataBean article = new BoardDataBean();
+String saveDirectory = application.getRealPath("/FileUpload");
+int maxPostSize = 10 * 1024 * 1024;
+String encoding = "utf-8";
+FileRenamePolicy policy = new DefaultFileRenamePolicy();
+String fileName = "filename";
+
+//위의 %태그  import 쓴 이유 인터넷s(-)
+//set(1)과 set(2) 쓴 이유 인터넷s(-)
+//fileUpload 책에 없기도 있기도 함. 내가 함수를 읽어야 말이지.
+MultipartRequest multi = 
+	new MultipartRequest(request, saveDirectory, maxPostSize, encoding, policy);
+File file = multi.getFile(fileName);
+fileName = file.getName();
+long fileSize = file.length();
+
+if(fileName == null){
+out.println("파일 업로드 실패");
+}else{
+	article.setNum(Integer.parseInt(multi.getParameter("num")));
+	article.setWriter(multi.getParameter("writer"));
+	article.setContent(multi.getParameter("content"));
+	article.setSubject(multi.getParameter("subject"));
+	article.setPasswd(multi.getParameter("passwd"));
+	article.setFilename(fileName);
+	article.setFilesize(fileSize);
+}
+%>
+
+
+
+
+
+00:00 uploadFile.jsp만듬
+	<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+String saveDirectory = application.getRealPath("/FileUpload");
+int maxPostSize = 10 * 1024 * 1024;
+String encoding = "utf-8";
+FileRenamePolicy policy = new DefaultFileRenamePolicy();      
+String fileName = "filename";
+
+MultipartRequest multipartRequest = 
+    new MultipartRequest(request, saveDirectory, maxPostSize, encoding, policy);      
+File file = multipartRequest.getFile(fileName);
+fileName = file.getName();
+long fileSize = file.length();
+
+if(fileName == null){
+  out.println("파일 업로드 실패");
+}else{
+
+}
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+20190827 1.업로드 2.업로드 출력하기 3.
+
+
+10:37 삭제하심.
+	article.setFilename(fileName);
+	article.setFilesize(fileSize);
+}
+---
+(-)20190800언제? 
+content.jsp  
+<td colspan="4" bgcolor="<%=value_c%>">
+    <input type="button" value="글수정"
+     onclick="document.location.href='updateForm.jsp?num=<%= article.getNum() %>&pageNum=<%= pageNum %>'">
+    <input type="button" value="글삭제"
+     onclick="document.location.href='deleteForm.jsp?num=<%= article.getNum() %>&pageNum=<%= pageNum %>'">
+    <input type="button" value="답글쓰기"
+     onclick="document.location.href='writeForm.jsp?num=<%= article.getNum() %>&ref=<%= ref %>&reStep=<%= reStep %>&reLevel=<%= reLevel %>'">
+    <input type="button" value="글목록"
+     onclick="document.location.href='list.jsp?pageNum=<%= pageNum %>'">
+  </td>
+
+
+
+
+
+(-)첨부파일을 꺼내서 보는법.
+insert 하는곳 ...?
+list에서는 파일을 가져올 필요가 없다. gatarticle있으니 다른 줄에 ~로 꺼내야함.
+화면에 뿌려줌.
+
+
+(-)content.jsp 수정하기
+<title>게시글 읽기</title>
+<link href="style.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+  function down(filename){
+     document.downFrm.filename.value=filename;
+     document.downFrm.submit();
+  }
+</script>
+</head>
+---
+<%
+  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+  int num = Integer.parseInt(request.getParameter("num"));
+  String pageNum = request.getParameter("pageNum");
+  try {
+	  BoardDBBean dbPro = BoardDBBean.getInstance();
+	  BoardDataBean article = dbPro.getArticle(num);
+	  int ref=article.getRef();
+	  int reStep=article.getReStep();
+	  int reLevel=article.getReLevel();
+		String filename = article.getFilename();
+		long filesize = article.getFilesize();
+%>
+---
+<tr>
+  <td align="center" bgcolor="<%=value_c%>">첨부파일</td>
+  <td align="left" colspan="3" >
+  <% if(filename==null || filename.equals("")) { %>등록된 파일이 없습니다. 
+	<% } else { %><%=filename %>&nbsp;&nbsp;&nbsp;&nbsp;(<%=filesize %>bytes)
+	<% } %>
+  </td>
+</tr>
+---
+    <input type="button" value="글수정"
+     onclick="document.location.href='updateForm.jsp?num=<%= article.getNum() %>&pageNum=<%= pageNum %>'">
+    <input type="button" value="글삭제"
+     onclick="document.location.href='deleteForm.jsp?num=<%= article.getNum() %>&pageNum=<%= pageNum %>'">
+    <input type="button" value="답글쓰기"
+     onclick="document.location.href='writeForm.jsp?num=<%= article.getNum() %>&ref=<%= ref %>&reStep=<%= reStep %>&reLevel=<%= reLevel %>'">
+    <input type="button" value="글목록"
+     onclick="document.location.href='list.jsp?pageNum=<%= pageNum %>'">
+ ---
+	 </table>
+</form>
+
+<form name="downFrm" action="download.jsp" method="post">
+  <input type="hidden" name="filename">
+</form>
+<%	  
+  } catch (Exception e) { }
+%>
+
+</body>
+</html>
+-----
+?줄에
+<a href="javascript:down"
+이라는 function을 씀.
+script ...(즉 사이에 쓰임)
+eg>
+
+//후자 지우심
+	document.downFrm.filename.value=filename;
+	document.downFrm.submit();
+	
+//?줄에 삽입함
+  function down(filename){
+     document.downForm.filename.value=filename;
+     document.downForm.submit();
+  }
+</script>
+</head>
+<body bgcolor="<%=bodyback_c%>">
+
+<form name=downForm action="download.jsp" method="post">
+  <input type="hidden" name="filename">
+</form>
+
+---
+<p>글내용 보기</p>
+//삽입함.
+<form name="bodyForm">	
+	
+	
+	
+//위의 download때문 import할꺼 많아짐 카피해야할지도요.
+BoardDBBean.java에서
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+
+---
+//마지막 줄에 삽입
+        return result;
+	}
+
+	public static String replace(String str, String pattern, String replace) {
+		int s = 0, e = 0;
+		StringBuffer result = new StringBuffer();
+
+		while ((e = str.indexOf(pattern, s)) >= 0) {
+			result.append(str.substring(s, e));
+			result.append(replace);
+			s = e + pattern.length();
+		}
+		result.append(str.substring(s));
+		return result.toString();
+	}
+	public static void delete(String s) {
+		File file = new File(s);
+		if (file.isFile()) {
+			file.delete();
+		}
+	}
+	public static String con(String s) {
+		String str = null;
+		try {
+			str = new String(s.getBytes("8859_1"), "ksc5601");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return str;
+	}
+	//파일 다운로드
+	public void downLoad(HttpServletRequest req, HttpServletResponse res,
+			JspWriter out, PageContext pageContext) {
+	  String  SAVEFOLDER = "/Fileupload";
+	  try {
+	    String filename = req.getParameter("filename");
+	    File file = new File(con(SAVEFOLDER + File.separator+ filename));
+	    byte b[] = new byte[(int) file.length()];
+	    res.setHeader("Accept-Ranges", "bytes");
+	    String strClient = req.getHeader("User-Agent");
+	    if (strClient.indexOf("MSIE6.0") != -1) {
+	      res.setContentType("application/smnet;charset=euc-kr");
+	      res.setHeader("Content-Disposition", "filename=" + filename + ";");
+	    } else {
+	      res.setContentType("application/smnet;charset=euc-kr");
+	      res.setHeader("Content-Disposition", "attachment;filename="+ filename + ";");
+	    }
+	    out.clear();
+	    out = pageContext.pushBody();
+	    if (file.isFile()) {
+	      BufferedInputStream fin = new BufferedInputStream(
+	          new FileInputStream(file));
+	      BufferedOutputStream outs = new BufferedOutputStream(
+	          res.getOutputStream());
+	      int read = 0;
+	      while ((read = fin.read(b)) != -1) {
+	        outs.write(b, 0, read);
+	      }
+	      outs.close();
+	      fin.close();
+	    }
+	  } catch (Exception e) {
+	    e.printStackTrace();
+	  }
+	}
+
+	
+}
+---
+	  //String  SAVEFOLDER = "/Fileupload";
+		String SAVEFOLDER="C:/z_ejkim/java_workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ECh13_20190820/FileUpload";
+
+
+
+
+
+(-)download.jsp수정해주면 
+(-)올렸더니 파일크기가 작아니는 오류발생.(나는 따라가지도 못하는중)
+String  SAVEFOLDER = req.getSession().getServletContext().getRealPath("/FileUpload");
+//둘 중 한가지 사용함. 위를 추천함.
+//String SAVEFOLDER = "C:/z_ejkim/java_workspace/.metadata/.plugins/org.eclipse.wst.server.core/tmp0/wtpwebapps/ECh13_20190820/FileUpload";
+
+
+
+
+
+
+진도나감.
+0JSPStudy_PPT.chapter14
+Bean이름 데이터베이스랑 같이해서 차별둠.
+= bean 2개 데이터베이스 2개임.
+//hobby가 char(5)에요? A:checkbox?에 마킹씌워서 1,2,으로 읽을꺼라 예상
+
+p.
+//회원가입 입력 DB에 연결한다는 뜻.
+
+p.회원 인증 흐름도
+login.jsp = 성공 여부를 뿌림
+loginProc.jsp 내용은 답이랑 다름. (-)수정해서 응용하기. 글쓴이가 생각짧은듯. 
