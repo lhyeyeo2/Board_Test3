@@ -11,6 +11,7 @@ public class MemberBean {
 	private String address;
 	private String hobby[];
 	private String job;
+	
 	public String getId() {
 		return id;
 	}
@@ -73,17 +74,3 @@ public class MemberBean {
 	}
 	
 }
-/*
-이름       널?       유형           
--------- -------- ------------ 
-ID       NOT NULL VARCHAR2(20) 
-PWD      NOT NULL VARCHAR2(20) 
-NAME     NOT NULL VARCHAR2(20) 
-GENDER   NOT NULL VARCHAR2(1)  
-BIRTHDAY NOT NULL VARCHAR2(6)  
-EMAIL    NOT NULL VARCHAR2(30) 
-ZIPCODE  NOT NULL VARCHAR2(5)  
-ADDRESS  NOT NULL VARCHAR2(50) 
-HOBBY    NOT NULL VARCHAR2(5)  
-JOB      NOT NULL VARCHAR2(20) 
-*/

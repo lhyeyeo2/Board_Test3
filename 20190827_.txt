@@ -435,4 +435,695 @@ ConnectionObject
 	freeConnection
 	re
 
+
+
+
+
+
+20190828
+zipcode를 readonly 해서 아쉬움
+
+
+member.jsp
+//idcheck 가려고 이 파일 수정
+   url = "idCheck.jsp?id=" + id;  // document.regFrm.id.value // frm.id.value
+----
+//오타
+<td><input type= "email" name="email" size="30">
+
+
+
+?.???
+<% 
+String id = request.getParameter("id");
+%>
+----
+
+(+)idCheck.jsp에서
+</head>
+<body bgcolor="#FFFFCC">
+<div align="center">
+  <br/><b><%=id %></b>
+  <%
+  if(result){
+	  out.println("는 이미 존재하는 ID입니다.<p/>");
+  } else {
+    out.println("는 사용 가능 합니다.<p/>");
+  }
+  %>
+  <a href="#" onClick="self.close()">닫기</a> 
+
+
+
+</div>
+
+	//멈춘상태에서 
+(+)	MemberMgr.java
+	public boolean checkId(String id) {
+		boolean flag=false;
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		String sql=null;
+		try {
+			conn=pool.getConnection();
+			sql="select id from tblmember where id=?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt);
+		}
+		return flag;
+	}
+...
+	//cnt=count
+	ResultSet rs = pstmt.executeQuery();
+	rs.next()
+	//int cnt = pstmt.excuteUpdate();
+	//int.. 말고
+ 
+	//if..는 null이냐 아니냐 if(rs.next()) -> rs.next() 씀
 	
+	
+	
+	
+	
+	
+(+)zipSearch.jsp
+<%@page import="jsboard.ZipcodeBean"%>
+<%@page import="java.util.Vector"%>
+<jsp:useBean id="mMgr" class="jsboard.MemberMgr"/>
+<%
+request.setCharacterEncoding("UTF-8");
+String search = request.getParameter("search");
+String area3 = null;
+Vector<ZipcodeBean> vlist = null;
+if(search.equals("y")) {
+		area3=request.getParameter("area3");
+vlist = mMgr.zipcodeRead(area3);
+}
+//area3 가뭔지 뭐로게
+//vector.는 기본문법이라 꼭 알아야함.
+//"y"는 뒤에 	frm.action="zipSearch.jsp?search=y"; 로 나옴
+<jsp:useBean id="mMgr" class="jsboard.MemberMgr"/>
+%>
+---
+function loadSearch() {
+	frm = document.zipForm;
+	if(frm.area3.value == "") {
+		alert("도로명을 입력하세요.");
+		frm.area3.focus();
+		return;
+	} 
+	frm.action="zipSearch.jsp?search=y";
+	frm.submit();
+}
+
+
+
+
+
+(+)MemberMgr.java
+	public boolean checkId(String id) {
+		boolean flag=false;
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		String sql=null;
+		try {
+			conn=pool.getConnection();
+			sql="select id from tblmember where id=?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			flag = pstmt.executeQuery().next();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt);
+		}
+		return flag;
+	}
+
+	public Vector<ZipcodeBean> zipcodeRead(String area3) {
+		Vector<ZipcodeBean> vlist = new Vector<ZipcodeBean>();
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		ResultSet rs = null;
+		String sql=null;
+		try {
+			conn=pool.getConnection();
+			sql="select * from tblzipcode where AREA3 like ?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, "%"+area3+"%");
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				
+				rs.getString(1);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt);
+		}
+		return flag;
+	}
+
+
+
+(-)???.???
+addElement
+
+
+
+
+
+(-)zipSearch.jsp
+\공유폴더\여기올려주세요\20190828
+오라클 한글  3byte -> 2byte
+
+
+
+(-)오라클에서 zipcode.??? 
+select * from nls_database_parameters where parameter='NLS_CHARACTERSET';
+AL43UTF8 이게 3byte를 뜻함.
+----
+
+
+    if(search.equals("y")) {
+    	  if(vlist.isEmpty()) {
+    		  %>
+    		 <tr><td align="center"><br/>검색된 결과가 없습니다.</td></tr> 
+    		  <%
+    	  } else {
+    		  %>
+    		  <tr><td align="center"><br/>※검색 후, 아래 우편번호를 클릭하면 자동으로 입력됩니다.</td></tr> 
+    		  <%
+
+
+
+
+-------
+select * from nls_database_parameters;
+function sendAdd(zipcode, adds) {
+	opener.document.regFrm.zipcode.value = zipcode;
+	opener.document.regFrm.address.value = adds;
+	self.close();
+}
+
+
+
+----------
+
+
+
+    <%
+    for(int i=0;i<vlist.size(); i++){
+    	ZipcodeBean bean = vlist.get(i);
+    	String rZipcode = bean.getZipcode();
+    	String rArea1 = bean.getArea1();
+    }
+    %>
+    
+    
+    
+  </table>  
+  </form>
+-----
+//지금까지 한거에 
+입력 안하고 검색하면 y가 실행 안되고
+(-)다시 물어보기
+
+
+---
+주소찾기->
+콘솔 에러: into를 못 찾는다는 (쓴거 또 쓴적(함수)
+// MemberMgr.java의 sql 쿼리문 수정하기)
+// ZipcodeBean.java 만들기 
+MemberMgr
+		try {
+			conn=pool.getConnection();
+			sql="select id from tblmember where id=?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			flag = pstmt.executeQuery().next();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt);
+		}
+		return flag;
+	}
+
+	public Vector<ZipcodeBean> zipcodeRead(String area3) {
+		Vector<ZipcodeBean> vlist = new Vector<ZipcodeBean>();
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		ResultSet rs = null;
+		String sql=null;
+		try {
+			conn=pool.getConnection();
+			sql="select * from tblzipcode where AREA3 like ?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, "%"+area3+"%");
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				ZipcodeBean bean=new ZipcodeBean();
+				bean.setZipcode(rs.getString(1));
+				bean.setArea1(rs.getString(2));
+				bean.setArea2(rs.getString(3));
+				bean.setArea3(rs.getString(4));
+				vlist.addElement(bean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt);
+		}
+		return vlist;
+	}
+	
+	public boolean insertMember(MemberBean bean) {
+		boolean flag=false;
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		String sql=null;
+		try {
+			conn=pool.getConnection();
+			sql="insert into tblmember (id,pwd,name,gender,birthday,email,zipcode,address,hobby,job) "
+					+ " values (?,?,?,?,?,?,?,?,?,?) ";
+					
+					
+					
+					
+					
+(-)ZipcodeBean.java 만들기 					
+	private String zipcode;
+	private String area1;
+	private String area2;
+	private String area3;
+	
+	
+	
+	
+	
+	
+	
+테이블에 존재하는 모든 칼럼들을 조회하기 위해서는	
+	select * from [테이블명] ;
+	
+	
+	
+	버튼 함수 머리에 <script type="text/javascript" src="script.js"></script>
+	즉 script.js
+	내용없음->쌤내용(+)->어려움. 만든거야? 복붙이야?
+	----
+	idCheck.jsp
+	<jsp:useBean id="mMgr" class="jsboard.MemberMgr"/>
+<% 
+String id = request.getParameter("id");
+boolean result = mMgr.checkId(id);
+
+
+
+
+
+
+
+회원가입버튼 작동됬는데 다음화면이 
+(+)memberProc.jsp
+%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<% request.setCharacterEncoding("UTF-8"); %>
+
+<jsp:useBean id="mgr" class="jsboard.MemberMgr"/>
+<jsp:useBean id="bean" class="jsboard.MemberBean"/>
+<jsp:setProperty property="*" name="bean"/> 
+<%
+boolean result = mgr.insertMember(bean);
+String msg="회원가입에 실패 하였습니다.";
+String location="member.jsp";
+if(result){
+	msg="회원가입을 하였습니다.";
+	location="login.jsp";
+}
+%>
+<script>
+alert("<%=msg%>");
+location.href="<%=location%>"
+
+</script>
+
+
+
+
+
+(-)15:02
+
+login.jsp
+(+)loginProc.jsp
+(+)MemberMgr
+15:55 http://localhost:8181/20190827_JSCh14/loginProc.jsp 에러를 읽을줄 모름.
+입력해서 로그인 누르는데 정보조회를 안하냐? 오류내용이랑 뭔상관?
+Newfile.jsp
+까지가 로그인이고
+로그아웃설계
+로그아웃 눌러서
+(-)http://localhost:8181/20190827_JSCh14/logout.jsp  백지인데 login.jsp 떠야할듯? 
+login.jsp가 그냥 로그인화면으로 안 뜬다고 member.jsp들어갔다고
+
+
+(-)admin 관련 수정하러가기
+(-)취미 0가지 고르면 가입 실패하냐?
+
+
+
+(-)loginProc.jsp
+-----
+//받아오는건 login의 String id = (String)session.getAttribute("idKey");
+->member.jsp 로 들어옵니다? 수정하러가기
+//리턴타입이 모든지 되서 형을 맞춰줌 String 하고있었으니. 어케앎 String id
+//
+
+(-)logout.jsp
+
+(-)member.jsp 요기서 로그인하거나 로그아웃 갈수있게끔
+
+다하셨다는데
+(다른기능으로 가는건가요)
+login.jsp
+
+
+
+15:30 시간순서
+(+)login.jsp
+request.setCharacterEncoding("UTF-8");
+String id = (String)session.getAttribute("idKey");
+%>
+---
+<div align="center"><br/><br/>
+    <%
+    if(id!=null){
+   	%>
+    	<b><%=id%></b>환영합니다.
+    	<p>제한된 기능을 사용 할 수가 이습니다.</p>
+    	<a href="logout.jsp">로그아웃</a>
+   	<%
+    } else {
+    %>
+    <form name="loginFrm" method="post" action="loginProc.jsp">
+---
+     </table>
+    </form>
+    <% } %> <!--이거 넣어야 닫힘-->
+  </div>
+  
+  
+  
+  
+  
+  (+)loginProc.jsp
+  <jsp:useBean id="mMgr" class="jsboard.MemberMgr"/>
+<%
+request.setCharacterEncoding("UTF-8");
+String id= request.getParameter("id");
+String pwd= request.getParameter("pwd");
+String msg="로그인에 실패하였습니다.";
+String location="login.jsp";
+
+boolean result =  mMgr.loginMember(id, pwd);
+if(result){
+	session.setAttribute("idKey", id); // session.invalidate();
+	msg="로그인에 성공하였습니다.";
+}
+%>
+<script>
+	 alert("<%=msg%>");
+	 location.href="<%=location%>";
+</script>
+
+
+
+
+
+
+()MemberMgr
+		} finally {
+			pool.freeConnection(conn, pstmt, rs);
+	-----
+	마지막 줄에 삽입.
+		public boolean loginMember(String id, String pwd) {
+		boolean flag=false;
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		ResultSet rs=null;
+		String sql=null;
+		try {
+			conn=pool.getConnection();
+			sql="select id from tblmember where id=? and pwd=?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			pstmt.setString(2, pwd);
+			rs = pstmt.executeQuery();
+			flag = rs.next();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt, rs);
+		}
+		return flag;
+	}
+	()login.jsp
+ ()Newfile.jsp
+ 
+ 
+
+
+
+
+
+()
+
+
+
+
+
+(-)login.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%!
+String admin="admin";
+%>
+<%
+request.setCharacterEncoding("UTF-8");
+String id = (String)session.getAttribute("idKey");
+%>
+
+<html>
+<head>
+<title>로그인</title>
+<link href="style.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+  function loginCheck() {
+    if (document.loginFrm.id.value == "") {
+      alert("아이디를 입력해 주세요.");
+      document.loginFrm.id.focus();
+      return;
+    }
+    if (document.loginFrm.pwd.value == "") {
+      alert("비밀번호를 입력해 주세요.");
+      document.loginFrm.pwd.focus();
+      return;
+    }
+    document.loginFrm.submit();
+  }
+</script>
+</head>
+<body bgcolor="#ffffcc">
+<div align="center"><br/><br/>
+    <%
+    if(id!=null){
+   	%>
+    	<b><%=id%></b>환영합니다.
+    	<%
+    	if(id.equals(admin){
+    	%>
+    	  <p><a href="memberList.jsp">회원목록 조회</a></p>
+    	<%
+    	} else {
+    	%>
+    	<p>제한된 기능을 사용 할 수가 이습니다.</p>
+    	<% }%>
+    	<a href="logout.jsp">로그아웃</a>
+   	<%
+    } else {
+    %>
+    <form name="loginFrm" method="post" action="loginProc.jsp">
+      <table>
+        <tr>
+          <td align="center" colspan="2"><h4>로그인</h4></td>
+        </tr>
+        <tr>
+          <td>아 이 디</td>
+          <td><input name="id"></td>
+        </tr>
+        <tr>
+          <td>비밀번호</td>
+          <td><input type="password" name="pwd"></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div align="right">
+              <input type="button" value="로그인" onclick="loginCheck()">&nbsp;
+              <input type="button" value="회원가입" onClick="javascript:location.href='member.jsp'">
+            </div>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <% } %>
+  </div>
+</body>
+</html>
+
+
+
+
+
+(-)memberList.jsp 새로 만듬 !수정중
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@page import="java.util.Vector"%>
+<%@page import="jsboard.MemberBean"%>
+
+<jsp:useBean id="mMgr" class="jsboard.MemberMgr"/> 
+<%
+Vector<MemberBean> vlist = Vector<MemberBean>();
+vlist = mMgr.membersInfo();
+%>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>회원목록조회</title>
+<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<table>
+<tr>
+<td>id</td>
+<td>passwd</td>
+<td>name</td>
+<td>gender</td>
+<td>birthday</td>
+<td>email</td>
+<td>zipcode</td>
+<td>address</td>
+<td>hobby</td>
+<td>job</td>
+</tr>
+<%
+for(int i=0; i<vlist.size; i++) {
+	MemberBean bean = vlist.get(i);
+	%>
+		<tr>
+		<td><%= bean.getId() %></td>
+		<td><%= bean.getPwd() %></td>
+		<td><%= bean.getName() %></td>
+		<td>gender</td>
+		<td>birthday</td>
+		<td>email</td>
+		<td>zipcode</td>
+		<td>address</td>
+		<td>hobby</td>
+		<td>job</td>
+		</tr>
+	<%
+}
+%>
+
+
+</table>
+</body>
+</html>
+
+
+
+
+
+
+
+()
+	
+	public Vector<MemberBean> membersInfo() {
+		Vector<MemberBean> vlist = new Vector<MemberBean>();
+		Connection conn=null;
+		PreparedStatement pstmt=null;
+		ResultSet rs = null;
+		String sql=null;
+		String admin = "admin";
+		try {
+			conn=pool.getConnection();
+			sql="select * from tblmember where id<>?";
+			pstmt=conn.prepareStatement(sql);
+			pstmt.setString(1, admin);
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				MemberBean bean=new MemberBean();
+				bean.setId(rs.getString(1));
+				bean.setPwd(rs.getString(2));
+				bean.setName(rs.getString(3));
+				bean.setGender(rs.getString(4));
+				bean.setBirthday(rs.getString(5));
+				bean.setEmail(rs.getString(6));
+				bean.setZipcode(rs.getString(7));
+				bean.setAddress(rs.getString(8));
+				//bean.setHobby(rs.getString(9));
+				bean.setJob(rs.getString(10));
+				vlist.addElement(bean);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			pool.freeConnection(conn, pstmt, rs);
+		}
+		return vlist;
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
